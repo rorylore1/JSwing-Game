@@ -4,134 +4,205 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
 
+//The HomePage class creates the home page where the player can see their inventory, the day counter, instructions, and the events of the day.
 public class HomePage extends JPanel {
 
-    private EventListenerList listenerList = new EventListenerList();
-    private int dayCounter=0;
-    private JLabel DisplayDay;
-    private JTextArea EventsDisplay;
-
+    private EventListenerList listenerList = new EventListenerList();   //list of listeners for the events in the home page
+    private JLabel DisplayDay;          //display for the day counter
+    private JTextArea EventsDisplay;    //display for the events of the day, updated when the player takes an action
+    private JLabel FoodLabel, SeedsLabel, ToolsLabel;   //displays for the player's inventory, updated when the player takes an action
+    private JButton goFarming, goForaging, goHunting, goToBed;  //action buttons
+    private final ImageIcon house = new ImageIcon(new ImageIcon("Images/house.jpg").getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+ 
+    //Constructor for the HomePage class. It creates the Swing components and sets up the layout.
     public HomePage(Person player, String title) {
 
-        //create vars
-        int ToolCount, MedSupplyCount;
-        ToolCount = MedSupplyCount = 0;
-
-        //set page container
+        //set page container layout
         setLayout(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
 
         //Top section/////////////////////////
         JPanel Top = new JPanel();
         Top.setLayout(new BoxLayout(Top, BoxLayout.Y_AXIS));
-        Top.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        JLabel TopTitle = new JLabel(player.GetUsername() + "'s Home");
+        //swing components
+        JLabel TopTitle = new JLabel(player.getUsername() + "'s Home");
         TopTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        DisplayDay = new JLabel("Day 0");
+        DisplayDay = new JLabel("Day " + player.getDayCounter());
         DisplayDay.setAlignmentX(Component.CENTER_ALIGNMENT);
         EventsDisplay = new JTextArea("The sun rises...\nA new day begins.\n");
         EventsDisplay.setEditable(false);
         EventsDisplay.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        //add to Top section
         Top.add(TopTitle);
         Top.add(DisplayDay);
         Top.add(EventsDisplay);
-        //add to homepage
-        gc.fill=GridBagConstraints.BOTH;
-        gc.weightx = 1;
-        gc.gridwidth=5;
-        gc.gridheight=15;
+
+        //add Top section to homepage frame
+        gc.fill=GridBagConstraints.HORIZONTAL;
+        gc.anchor=GridBagConstraints.PAGE_START;
+        gc.gridwidth=GridBagConstraints.REMAINDER;
+        gc.gridheight=6;
+        gc.weighty=1;
+        gc.gridy=0;
+        gc.gridx=0;
         add(Top, gc);
+
+        //Actions section/////////////////////////
+        JPanel ActionsPanel = new JPanel();
+        ActionsPanel.setLayout(new BoxLayout(ActionsPanel, BoxLayout.Y_AXIS));
+
+        //swing components
+        goFarming = new JButton("Go Farming");
+        goForaging = new JButton("Go Foraging");
+        goHunting = new JButton("Go Hunting");
+        goToBed = new JButton("Go to Bed");
+
+        //add buttons to ActionsPanel
+        ActionsPanel.add(goFarming);
+        ActionsPanel.add(goForaging);
+        ActionsPanel.add(goHunting);
+        ActionsPanel.add(goToBed);
+
+        //Set GridBagConstraints for the second row in the Frame
+        gc.anchor=GridBagConstraints.CENTER;
+        gc.gridwidth=1;
+        gc.gridheight=1;
+        gc.gridy=5;
+        //add ActionsPanel to homepage
+        gc.insets = new Insets(0,10,0,0);
+        gc.gridx=0;
+        add(ActionsPanel, gc);
+
+        //House Image section/////////////////////////
+        gc.insets = new Insets(0,0,0,0);
+        gc.gridx=1;
+        add(new JLabel(house), gc);
 
         //Inventory section/////////////////////////
         JPanel InventoryPanel = new JPanel();
         InventoryPanel.setLayout(new BoxLayout(InventoryPanel, BoxLayout.Y_AXIS));
-        InventoryPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        JLabel InventoryLabel = new JLabel("Inventory");
-        InventoryLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        InventoryPanel.add(InventoryLabel);
-        JLabel FoodLabel = new JLabel("Food: " + player.getFood());
+        //swing components
+        JLabel inventoryLabel = new JLabel("Inventory");
+        inventoryLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        InventoryPanel.add(inventoryLabel);
+        FoodLabel = new JLabel("Food: " + player.getFood());
+        SeedsLabel = new JLabel("Seeds: " + player.getSeeds());
+        ToolsLabel = new JLabel("Tools: 5");
+        //add to InventoryPanel
         InventoryPanel.add(FoodLabel);
-        JLabel SeedsLabel = new JLabel("Seeds: " + player.getSeeds());
         InventoryPanel.add(SeedsLabel);
-        InventoryPanel.add(new JLabel("Tools: " + ToolCount));
-        InventoryPanel.add(new JLabel("Medical Supplies: " + MedSupplyCount));
-        //Set GridBagConstraints for the second row in the Frame
-        gc.fill = GridBagConstraints.HORIZONTAL;
-        gc.weightx = .5;
-        gc.weighty = .5;
-        gc.gridx=1;
-        gc.gridy=1;
-        gc.gridwidth=1;
-        gc.insets = new Insets(0,10,0,10);
+        InventoryPanel.add(ToolsLabel);
+
         //add InventoryPanel to homepage
+        gc.insets = new Insets(0,0,0,10);
         gc.gridx=2;
-        gc.gridy=1;
         add(InventoryPanel, gc);
 
-        //Events section/////////////////////////
-        JPanel EventsPanel = new JPanel();
-        EventsPanel.setLayout(new BoxLayout(EventsPanel, BoxLayout.Y_AXIS));
-        EventsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        //Instructions section/////////////////////////
+        JPanel BottomPanel = new JPanel();
+        BottomPanel.setLayout(new BoxLayout(BottomPanel, BoxLayout.Y_AXIS));
 
-        JButton GoFarming = new JButton("Go Farming");
-        JButton GoHunting = new JButton("Go Hunting");
-        JButton GoForaging = new JButton("Go Foraging");
-        JButton GoToBed = new JButton("Go to Bed");
-        EventsPanel.add(GoFarming);
-        EventsPanel.add(GoHunting);
-        EventsPanel.add(GoForaging);
-        EventsPanel.add(GoToBed);
-        //add to EventsPanel homepage
+        //swing components
+        JLabel instructions = new JLabel("<html><center>Instructions<br>It's time to survive!<br>go farming, foraging, and hunting to gather food and seeds.<br>go to bed to end the day and age your plants.<br>Beware, each action can be done once a day and costs one food!<br>Above all, DON'T RUN OUT OF FOOD!!</center></html>");
+        instructions.setBorder(BorderFactory.createLineBorder(Color.RED));
+        instructions.setAlignmentX(CENTER_ALIGNMENT);
+        //add to BottomPanel
+        BottomPanel.add(instructions);
+
+        //set GridBagConstraints for the third row in the Frame
+        gc.fill=GridBagConstraints.HORIZONTAL;
+        gc.anchor=GridBagConstraints.PAGE_END;
+        gc.weighty = 1;
+        //add BottomPanel to homepage
+        gc.insets = new Insets(0,0,10,0);
         gc.gridx=1;
-        gc.gridy=1;
-        add(EventsPanel, gc);
+        add(BottomPanel, gc);
 
         //Listeners section/////////////////////////
-        GoFarming.addActionListener(new ActionListener() {
+        goFarming.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                fireDetailEvent(new DetailEvent(this, "GoFarming"));
-                GoFarming.setEnabled(false);
-                SeedsLabel.setText("Seeds: " + player.getSeeds());
-                FoodLabel.setText("Food: " + player.getFood());
+                fireDetailEvent(new DetailEvent(this, "goFarming", ""));
+                //update the home page displays
+                goFarming.setEnabled(false);
             }
         });
-        GoHunting.addActionListener(new ActionListener() {
+        goForaging.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                fireDetailEvent(new DetailEvent(this, "GoHunting"));
-                GoHunting.setEnabled(false);
+                //add a random (0-2) food amount
+                int foodRan = (int) (Math.random()*3);
+                player.setFood(player.getFood() + foodRan);
+                String text = "Consumed 1 food while foraging. ";
+                if (foodRan != 0) {
+                    text += foodRan;
+                } else {
+                    text += "No";
+                }
+                text += " food gained and ";
+                //add a random (0-2) seed amount
+                int seedRan = (int) (Math.random()*3);
+                player.setSeeds(player.getSeeds() + seedRan);
+                if (seedRan == 1) {
+                    text += "1 seed gained.\n";
+                } else if(seedRan > 1) {
+                    text += seedRan + " seeds gained.\n";
+                } else {
+                    text += "no seeds gained.\n";
+                }
+                //update the home page displays
+                goForaging.setEnabled(false);
+                displayEventText(text);
+                fireDetailEvent(new DetailEvent(this, "goForaging", ""));
             }
         });
-        GoForaging.addActionListener(new ActionListener() {
+        goHunting.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                fireDetailEvent(new DetailEvent(this, "GoForaging"));
-                GoForaging.setEnabled(false);
+                //add a random (0-5) food amount
+                int foodRan = (int) (Math.random()*5);
+                player.setFood(player.getFood() + foodRan);
+                goHunting.setEnabled(false);
+                String text = "Consumed 1 food while hunting. ";
+                if (foodRan != 0) {
+                    text += foodRan;
+                } else {
+                    text += "No";
+                }
+                text += " food gained.\n";
+                //update the home page displays
+                displayEventText(text);
+                fireDetailEvent(new DetailEvent(this, "goHunting", ""));
             }
         });
-        GoToBed.addActionListener(new ActionListener() {
+        goToBed.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                fireDetailEvent(new DetailEvent(this, "GoToBed"));
-                GoFarming.setEnabled(true);
-                GoHunting.setEnabled(true);
-                GoForaging.setEnabled(true);
+                fireDetailEvent(new DetailEvent(this, "goToBed", ""));
             }
         });
     }
-
-    private void incrementDay() {
-        dayCounter++;
-        DisplayDay.setText("Day " + dayCounter);
-    }
-    public void displayNightEventText(String text) {
+    //Reset home page componenets for a new day.
+    public void displayNightEventText(String text, Person player) {
+        //displays the events that occurred overnight
         EventsDisplay.setText(text);
-        incrementDay();
+        //increment the day counter
+        player.incrementDayCounter();
+        DisplayDay.setText("Day " + player.getDayCounter());
+        //refresh all the actions
+        goFarming.setEnabled(true);
+        goHunting.setEnabled(true);
+        goForaging.setEnabled(true);
     }
+    //Displays the events that occur when the player takes an action.
     public void displayEventText(String text) {
         EventsDisplay.append(text);
     }
-
-
+    //Updates the inventory display when the player takes an action.
+    public void updateInventory(Person player) {
+        FoodLabel.setText("Food: " + player.getFood());
+        SeedsLabel.setText("Seeds: " + player.getSeeds());
+    }
+    //Event firing and listener methods.
     public void fireDetailEvent(DetailEvent event) {
         Object[] listeners = listenerList.getListenerList();
         for(int a=0; a < listeners.length; a += 2) {

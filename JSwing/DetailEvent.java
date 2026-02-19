@@ -1,39 +1,18 @@
-
 import java.util.EventObject;
 
+//The DetailEvent class is used to create events in the *Page files.
 public class DetailEvent extends EventObject {
-    private String text, key;
-    public DetailEvent(Object source, String key) {
+    private final String key;
+    private final String mode;
+    public DetailEvent(Object source, String key, String mode) {
         super(source);
-        System.out.println("DetailEvent was triggered");
         this.key = key;
-        switch(key) {
-            case "GoFarming":
-                text = "We went farming.\n";
-                break;
-            case "GoHunting":
-                text = "We went hunting.\n";
-                break;
-            case "GoForaging":
-                text = "We went foraging.\n";
-                break;
-            case "GoToBed":
-                text = nightlyEvents();
-                break;
-            default:
-                //LoginPage, so text = username
-                text = key;
-                break;
-        }
-    }
-    public String getDisplayText() {
-        return text;
+        this.mode = mode;
     }
     public String getKey() {
         return key;
     }
-    private String nightlyEvents() {
-        return "Night Falls...\nCritters roam in the night.\nDawn begins, a new day...\n";
+    public String getMode() {
+        return mode;
     }
 }
-
